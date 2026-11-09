@@ -1,0 +1,161 @@
+/* assets/css/gestor.css - área do Gestor (acento verde) */
+body.perfil-gestor{--acento:#12a150;--acento-forte:#0d8a45}
+.etiqueta-restrita{background:#fff4d6;color:#a86b00;border:1px solid #f3d99a;border-radius:999px;padding:5px 12px;font-size:12px;font-weight:600;white-space:nowrap}
+
+/* indicadores */
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:18px}
+.kpi{background:#fff;border:1px solid var(--borda);border-radius:12px;padding:16px 18px}
+.kpi small{color:var(--cinza);font-size:12px}
+.kpi-linha{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:6px 0 4px}
+.kpi-linha b{font-size:22px;font-weight:800;letter-spacing:-.4px}
+.spark{width:84px;height:30px;flex:none}
+.var-pos{color:#12a150;font-size:12px;font-weight:600}.var-neg{color:#e5484d;font-size:12px;font-weight:600}
+.var-neutra{color:var(--cinza);font-size:12px}.var-aviso{color:#e69500;font-size:12px;font-weight:600}
+.dash-grid{display:grid;grid-template-columns:1.25fr 1fr;gap:18px;margin-bottom:18px;align-items:start}
+.cartao h3{font-size:16px;font-weight:700}
+.grafico{width:100%;height:auto;display:block;margin-top:10px}
+.barras-rota .linha{margin-bottom:14px;font-size:13px}
+.barras-rota .linha div:first-child{display:flex;justify-content:space-between;margin-bottom:5px}
+.barras-rota .linha b{font-weight:700}
+.barra-verde{height:6px;background:#e8ecf4;border-radius:4px;overflow:hidden}
+.barra-verde i{display:block;height:100%;background:#12a150;border-radius:4px}
+.lista-vendas .item{display:grid;grid-template-columns:1.4fr 1.2fr .8fr auto;gap:10px;align-items:center;padding:11px 4px;border-bottom:1px solid #eef1f6;font-size:13px}
+.lista-vendas .item:last-child{border-bottom:0}
+.lista-vendas .rota{color:var(--cinza)}
+.etq-pago{background:#e5f7ec;color:#0f8a45}.etq-expirado{background:#fff1d6;color:#b76e00}
+.etq-cancelado{background:#fdeaec;color:#c4303c}.etq-pendente{background:#eef1f6;color:#55657d}
+.etq-g{display:inline-block;padding:2px 10px;border-radius:5px;font-size:11px;font-weight:700}
+
+/* filtros */
+.filtros-g{display:grid;grid-template-columns:1.6fr 1.2fr 1fr auto;gap:14px;align-items:end}
+.filtros-g .campo{margin-bottom:0}
+.intervalo{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.chips-periodo{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 0}
+.chips-periodo a{background:#f4f6fa;border:1px solid var(--borda);border-radius:999px;padding:5px 12px;font-size:12px;font-weight:600;color:var(--cinza)}
+.chips-periodo a:hover{background:#e8f5ee;color:#0d8a45}
+.btn-verde{background:#12a150;color:#fff}.btn-verde:hover{background:#0d8a45}
+.pesquisa-pagina{display:flex;gap:8px;align-items:center;border:1px solid var(--borda);background:#fff;border-radius:8px;padding:8px 12px;min-width:260px}
+.pesquisa-pagina input{border:0;outline:none;font:500 13px var(--fonte);flex:1;background:none}
+.linha-destaque td{box-shadow:inset 3px 0 0 #12a150}
+
+/* relatórios */
+.kpis-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:18px 0}
+.kpi-grande{background:#fff;border:1px solid var(--borda);border-radius:12px;padding:20px}
+.kpi-grande small{color:var(--cinza);font-size:11px;letter-spacing:.5px;text-transform:uppercase}
+.kpi-grande b{display:block;font-size:30px;font-weight:800;letter-spacing:-.6px;margin:6px 0 2px}
+.rel-grid{display:grid;grid-template-columns:1.5fr 1fr;gap:18px;align-items:start}
+.detalhe-rota .item{display:flex;justify-content:space-between;align-items:center;padding:12px 2px;border-bottom:1px solid #eef1f6}
+.detalhe-rota .item:last-child{border-bottom:0}
+.detalhe-rota small{display:block;color:var(--cinza);font-size:11px;margin-top:2px}
+.detalhe-rota b{font-weight:700}
+
+/* estatísticas */
+.ranking .linha{display:grid;grid-template-columns:28px 1fr auto;gap:8px;align-items:center;margin-bottom:6px;font-size:13px}
+.ranking .barra-verde{grid-column:1 / -1;margin-bottom:10px}
+.ranking .pos{color:var(--cinza);font-size:11px;font-weight:700}
+.est-grid{display:grid;grid-template-columns:1fr 1.5fr;gap:18px;margin-bottom:18px;align-items:start}
+.calor{width:100%;border-collapse:separate;border-spacing:4px;table-layout:fixed;margin-top:10px}
+.calor th{font-size:10px;font-weight:600;color:var(--cinza);text-align:center}
+.calor th.h{text-align:right;width:44px;padding-right:6px}
+.calor td{height:26px;border-radius:5px}
+
+/* rotas */
+.tabela .nao-quebra{white-space:nowrap}
+.btn-link-e{background:none;border:0;font:600 12px var(--fonte);cursor:pointer;color:var(--cinza);padding:4px 8px}
+.btn-link-e:hover{color:var(--texto)}.btn-link-e.perigo{color:#d92d3a}.btn-link-e.verde{color:#0d8a45}
+.bloco-opcional{background:#f6f8fb;border:1px dashed #cdd6e4;border-radius:10px;padding:12px 14px;margin:6px 0 14px}
+.bloco-opcional h4{font-size:12px;margin:0 0 8px;color:var(--cinza);text-transform:uppercase;letter-spacing:.4px}
+.tres{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+input[readonly]{background:#f1f4f9;color:var(--cinza)}
+
+/* acesso restrito */
+.acesso-restrito{display:flex;justify-content:center;padding-top:40px}
+.ar-cartao{background:#fff;border:1px solid var(--borda);border-radius:16px;padding:36px 40px;text-align:center;max-width:460px;width:100%}
+.ar-icone{width:64px;height:64px;border-radius:50%;background:#fff1d6;color:#e69500;display:inline-flex;align-items:center;justify-content:center;margin-bottom:14px}
+.ar-icone .icone{width:30px;height:30px}
+.ar-cartao h1{font-size:22px;font-weight:800;margin-bottom:6px}
+.ar-cartao p{color:var(--cinza);margin:0 0 22px}
+
+@media(max-width:1000px){
+  .kpis,.kpis-3{grid-template-columns:1fr 1fr}
+  .dash-grid,.rel-grid,.est-grid,.filtros-g{grid-template-columns:1fr}
+}
+@media print{
+  .nao-imprimir,.lateral,.topo{display:none!important}
+  .rel-grid,.kpis-3{break-inside:avoid}
+}
+
+/* ---- reservas, autocarros e motoristas ---- */
+.chip-transp{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--borda);background:#fff;border-radius:8px;padding:8px 14px;font-size:13px;font-weight:600}
+.chip-transp .icone{width:16px;height:16px;color:var(--cinza)}
+.kpis-reservas{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:18px}
+.kpi-r{background:#fff;border:1px solid var(--borda);border-radius:12px;padding:16px 18px;display:flex;justify-content:space-between;align-items:center}
+.kpi-r small{color:var(--cinza);font-size:12px;display:block}.kpi-r b{font-size:28px;font-weight:800;display:block;margin:2px 0}
+.kpi-r .ico{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:#e5f7ec;color:#12a150}
+.kpi-r .ico.amarelo{background:#fff3d1;color:#c98400}.kpi-r .ico.vermelho{background:#fdeaec;color:#d92d3a}
+.filtros-r{display:grid;grid-template-columns:1.6fr 1fr 1.4fr 1fr auto;gap:14px;align-items:end}
+.filtros-r .campo{margin-bottom:0}
+.linha-filtros{display:flex;justify-content:space-between;align-items:center;margin-top:12px;font-size:12px;color:var(--cinza)}
+.linha-filtros a{font-weight:700;color:#0d8a45}
+.lista-cab{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.lista-cab h2{display:flex;align-items:center;gap:10px;font-size:16px}
+.contador{background:#eef1f6;color:var(--cinza);font-size:11px;font-weight:600;border-radius:6px;padding:2px 8px}
+.sub-linha{display:block;color:var(--cinza);font-size:11px;margin-top:2px}
+.btn-mais{background:none;border:0;font-size:18px;color:var(--cinza);cursor:pointer;padding:2px 10px;border-radius:6px}
+.btn-mais:hover{background:#eef1f6;color:var(--texto)}
+.pag-num{display:flex;gap:6px;align-items:center}
+.pag-num a,.pag-num span{min-width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--borda);border-radius:6px;font-size:12px;font-weight:600;color:var(--texto);background:#fff}
+.pag-num a.activa{background:#12a150;border-color:#12a150;color:#fff}.pag-num span{border:0;background:none;color:var(--cinza)}
+.nota-rodape{display:flex;gap:8px;align-items:center;font-size:12px;color:var(--cinza);margin-top:14px}
+dl.detalhes-reserva{display:grid;grid-template-columns:auto 1fr;gap:8px 16px;margin:0 0 16px;font-size:13px}
+dl.detalhes-reserva dt{color:var(--cinza)}dl.detalhes-reserva dd{margin:0;text-align:right;font-weight:600}
+
+/* formulários de frota */
+.form-frota{display:grid;grid-template-columns:1.6fr 1fr;gap:20px;align-items:start}
+.sec-form{background:#fff;border:1px solid var(--borda);border-radius:14px;padding:22px 24px;margin-bottom:18px}
+.sec-form h2{display:flex;align-items:center;gap:10px;font-size:17px;font-weight:800;margin-bottom:16px}
+.sec-form h2 .num{width:24px;height:24px;border-radius:7px;background:#e5f7ec;color:#0d8a45;font-size:12px;display:inline-flex;align-items:center;justify-content:center}
+.sec-form .campo input,.sec-form .campo select{background:#fff}
+.obrigatorio{color:#d92d3a}
+.upload-caixa{display:flex;justify-content:space-between;align-items:center;gap:12px;border:1px solid var(--borda);border-radius:10px;padding:14px 16px;margin-top:6px}
+.upload-caixa b{display:block;font-size:13px}.upload-caixa small{color:var(--cinza);font-size:11px}
+.upload-caixa input[type=file]{font-size:12px;max-width:210px}
+.resumo-lateral{position:sticky;top:76px}
+.resumo-box{background:#fff;border:1px solid var(--borda);border-radius:14px;padding:22px;margin-bottom:16px}
+.resumo-box h2{font-size:17px;font-weight:800;margin-bottom:14px}
+.resumo-cartao{background:#f4f6fa;border-radius:12px;padding:18px;text-align:center;margin-bottom:14px}
+.resumo-cartao .iniciais{width:48px;height:48px;border-radius:50%;background:#dff5e8;color:#0d8a45;font-weight:800;display:inline-flex;align-items:center;justify-content:center;margin-bottom:8px}
+.resumo-cartao b{display:block;font-size:16px}.resumo-cartao small{color:var(--cinza);display:block;margin:2px 0 8px}
+.resumo-bus{background:#f4f6fa;border-radius:12px;padding:14px 16px;margin-bottom:14px;text-align:left}
+.resumo-bus b{font-size:20px;display:block}.resumo-bus small{color:var(--cinza)}
+.linhas-resumo .l{display:flex;justify-content:space-between;padding:6px 0;font-size:13px;color:var(--cinza)}
+.linhas-resumo .l b{color:var(--texto);text-align:right}
+.lugares-grande{font-size:34px;font-weight:800;color:#12a150;line-height:1}
+.config-chip{background:#eef1f6;border-radius:6px;font-size:11px;font-weight:700;padding:3px 8px;color:var(--cinza)}
+.previa-bus{background:#f4f6fa;border-radius:12px;padding:12px;margin-top:12px}
+.previa-bus .topo{display:flex;justify-content:space-between;font-size:10px;letter-spacing:.5px;color:var(--cinza);margin-bottom:8px}
+.pv-fila{display:flex;gap:6px;justify-content:center;margin-bottom:5px}
+.pv-fila span{width:34px;height:20px;border:1px solid #dfe5ef;border-radius:4px;background:#fff;font-size:9px;color:var(--cinza);display:flex;align-items:center;justify-content:center}
+.pv-fila span.vazio{border:0;background:none}.pv-fila i{width:16px}
+.previa-nota{font-size:10px;color:var(--cinza);margin-top:6px}
+.aviso-verde{background:#e8f8ef;border:1px solid #b5e5c9;color:#0d6b37;border-radius:12px;padding:14px 16px;font-size:12px;margin-bottom:12px}
+.aviso-verde b{display:block;font-size:13px;margin-bottom:2px}
+.aviso-verde.invalido{background:#fdeaec;border-color:#f3c1c6;color:#a3202b}
+.nota-restrita{display:flex;gap:10px;font-size:12px;color:var(--cinza);padding:0 4px}
+.barra-form{position:sticky;bottom:0;background:#fff;border-top:1px solid var(--borda);margin:10px -28px -28px;padding:14px 28px;display:flex;justify-content:space-between;align-items:center;gap:12px;z-index:3}
+.barra-form .nota{display:flex;gap:8px;align-items:center;font-size:12px;color:var(--cinza)}
+.barra-form .botoes{display:flex;gap:10px}
+.select-estado{border:1px solid var(--borda);border-radius:6px;padding:5px 8px;font:600 12px var(--fonte);background:#fff}
+@media(max-width:1000px){
+  .kpis-reservas,.filtros-r,.form-frota{grid-template-columns:1fr}
+  .resumo-lateral{position:static}
+  .barra-form{margin:10px -18px -18px;padding:12px 18px;flex-direction:column;align-items:stretch}
+}
+
+/* ---- cobradores: atribuição de viagens ---- */
+.filtros input[type=date]{border:1px solid var(--borda);border-radius:8px;padding:8px 10px;font:500 13px var(--fonte);background:#fff;margin-left:4px}
+.barra-atribuir{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-top:18px;padding-top:16px;border-top:1px solid var(--borda)}
+.barra-atribuir .campo{min-width:280px;flex:1;max-width:420px}
+.barra-atribuir .botoes{display:flex;gap:10px;flex-wrap:wrap}
+.barra-atribuir .btn[disabled]{opacity:.45;cursor:not-allowed}
+.botoes-cab{display:flex;gap:10px;flex-wrap:wrap}

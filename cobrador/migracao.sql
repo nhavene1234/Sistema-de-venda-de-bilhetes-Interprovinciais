@@ -1,0 +1,5 @@
+-- SUBSTITUÍDO: já não é preciso ligar o cobrador a um registo de motorista.
+-- A associação cobrador -> transportadora -> motorista -> viagem é feita pelo Gestor
+-- (menu Cobradores) e usa utilizador.id_transportadora, viagem.id_cobrador e viagem.id_motorista.
+-- Se ainda não correu as colunas de embarque (reserva.embarcado_em / embarcado_por), execute
+-- sql/07_cobradores_viagens.sql, que é seguro correr mais do que uma vez.

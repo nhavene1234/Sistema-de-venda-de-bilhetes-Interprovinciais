@@ -1,0 +1,106 @@
+/* assets/css/bilheteiro.css - venda presencial, lugares ao vivo e vendas do dia */
+
+/* indicador de passos */
+.passos-venda{background:#fff;border:1px solid var(--borda);border-radius:12px;padding:16px 22px;display:flex;align-items:center;gap:14px;margin-bottom:18px}
+.pv{display:flex;align-items:center;gap:10px;flex:none}
+.pv .bola{width:28px;height:28px;border-radius:50%;border:2px solid #cfd8e6;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#8493ab;background:#fff}
+.pv.actual .bola,.pv.feito .bola{background:var(--azul);border-color:var(--azul);color:#fff}
+.pv b{display:block;font-size:12px}.pv small{font-size:10px;color:var(--cinza)}
+.pv-linha{flex:1;height:2px;background:#e1e7f0;min-width:20px}.pv-linha.feita{background:var(--azul)}
+
+/* passo 1 */
+.form-procura{display:grid;grid-template-columns:1.2fr 1.2fr 1fr auto;gap:14px;align-items:end}
+.empresa{display:flex;gap:10px;align-items:center}
+.inicial{width:30px;height:30px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:13px}
+.livres{padding:2px 9px;border-radius:5px;font-size:11px;font-weight:700}
+.livres-ok{background:#e5f7ec;color:#0f8a45}.livres-poucos{background:#fff3d1;color:#9a6a00}.livres-0{background:#fdeaec;color:#c4303c}
+
+/* passos 2 e 3 */
+.duas-colunas{display:grid;grid-template-columns:1.35fr 1fr;gap:18px;align-items:stretch}
+.resumo-card{display:flex;flex-direction:column}
+.titulo-mini{color:var(--azul-forte);font-weight:700;letter-spacing:.5px;font-size:10px}
+.resumo-card h2{font-size:22px;font-weight:800;margin:4px 0 12px}
+.detalhes{list-style:none;padding:0;margin:0 0 14px;font-size:13px;color:var(--cinza)}
+.detalhes li{display:flex;gap:8px;align-items:center;padding:4px 0}.detalhes b{color:var(--azul-forte)}
+.linha-valor{display:flex;justify-content:space-between;align-items:center;padding:6px 0;font-size:13px;color:var(--cinza)}
+.linha-valor b{color:var(--texto);text-align:right}
+.total-azul{color:var(--azul-forte)!important;font-size:24px}.total-grande{font-size:28px}
+.verde{color:#12a150}.vermelho{color:#e5484d}
+.chip-info{display:inline-flex;align-items:center;gap:6px;background:#e8f5fd;color:var(--azul-forte);font-size:11px;font-weight:700;border-radius:999px;padding:4px 12px;margin:6px 0 14px}
+.chip-info i{width:6px;height:6px;border-radius:50%;background:var(--azul)}
+.aviso-reserva-b{background:#fff3d6;color:#8a6200;border-radius:10px;padding:10px 14px;font-size:13px;margin-bottom:14px;display:inline-block}
+.campo-prefixo{display:flex;border:1px solid var(--borda);border-radius:8px;overflow:hidden;background:#fff}
+.campo-prefixo span{padding:11px 12px;font-weight:700;border-right:1px solid var(--borda);background:#f6f8fb}
+.campo-prefixo input{border:0!important;box-shadow:none!important;flex:1;padding:11px 12px;font:500 14px var(--fonte);outline:none}
+.metodos{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.metodo{display:flex;align-items:center;justify-content:center;border:1.5px solid var(--borda);border-radius:8px;padding:11px 6px;font-weight:600;font-size:13px;cursor:pointer;background:#fff;color:var(--cinza)}
+.metodo input{display:none}
+.metodo.escolhido{border-color:#12a150;background:#eaf8f0;color:#0d7a3c}
+
+/* autocarro */
+.bus{width:244px;margin:0 auto;background:#f4f6fa;border:2px solid #dde4ef;border-radius:28px;padding:14px 14px 12px}
+.bus-topo{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;color:#8493ab}
+.bus-topo .cabine{background:#e3e8f1;border-radius:6px;padding:3px 14px;font-size:9px;letter-spacing:1px;font-weight:700}
+.bus-fila{display:grid;grid-template-columns:34px 34px 1fr 34px 34px;gap:6px;margin-bottom:7px;align-items:center}
+.bus-fila .n{text-align:center;font-size:10px;color:#a0adc2}
+.bus-lugar{display:flex;align-items:center;justify-content:center;height:27px;border-radius:6px;font:700 10px var(--fonte);border:1.5px solid #12a150;background:#fff;color:#12a150;cursor:pointer;padding:0}
+.bus-lugar.fixo{cursor:default}
+.bus-lugar.ocupado{background:#e5484d;border-color:#e5484d;color:#fff;cursor:not-allowed}
+.bus-lugar.sel{background:#1ea1e6;border-color:#1ea1e6;color:#fff}
+.bus-legenda{display:flex;justify-content:center;gap:12px;font-size:9px;color:var(--cinza);margin-top:10px}
+.bus-legenda span{display:inline-flex;align-items:center;gap:4px}
+.bus-legenda i{width:9px;height:9px;border-radius:2px;display:inline-block}
+.l-livre{border:1.5px solid #12a150}.l-ocupado{background:#e5484d}.l-sel{background:#1ea1e6}
+
+/* emitir bilhete */
+.banner-sucesso{display:flex;gap:12px;align-items:center;background:#e5f7ec;border:1px solid #9bdcb4;color:#0d6b37;border-radius:10px;padding:14px 16px;margin-bottom:20px;font-size:13px}
+.banner-sucesso b{display:block;font-size:14px}
+.banner-sucesso .tick{width:30px;height:30px;border-radius:50%;background:#12a150;color:#fff;display:flex;align-items:center;justify-content:center;flex:none}
+.banner-sucesso .tick .icone{width:16px;height:16px}
+.emitir-grid{display:flex;flex-wrap:wrap;gap:18px;justify-content:center}
+.cartao-bilhete{background:#fff;border:1px solid var(--borda);border-radius:14px;padding:24px;width:100%;max-width:380px}
+.logo-centro{text-align:center}
+.sub-bilhete{text-align:center;font-size:12px;color:var(--cinza);border-bottom:1px dashed #cbd5e3;padding-bottom:14px;margin:6px 0 16px}
+.qr-moldura{display:flex;justify-content:center}
+.qr-item{display:inline-block;padding:18px;background:#fff;border:1px solid var(--borda);border-radius:12px}
+.ref-chip{display:table;margin:10px auto 16px;background:#e8f5fd;color:var(--azul-forte);font:700 12px ui-monospace,Menlo,Consolas,monospace;padding:3px 12px;border-radius:6px}
+.dados-bilhete{display:grid;grid-template-columns:auto 1fr;gap:8px 14px;font-size:13px;margin:0}
+.dados-bilhete dt{color:var(--cinza)}.dados-bilhete dd{margin:0;text-align:right}
+.rodape-emitir{margin:18px auto 0}
+.total-pago{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--borda);padding-bottom:14px;margin-bottom:14px}
+.total-pago b{font-size:26px;font-weight:800}
+.acoes-emitir{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.link-centro{display:block;text-align:center;margin-top:14px;font-weight:600}
+
+/* lugares ao vivo */
+.seletor-viagem{display:flex;gap:12px;align-items:center;padding:14px 18px;margin-bottom:14px}
+.seletor-viagem select{flex:1;border:1px solid var(--borda);border-radius:8px;padding:9px 12px;font:600 13px var(--fonte);background:#fff}
+.cabecalho-viagem{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:14px;padding:16px 20px}
+.cv-esq{display:flex;gap:12px;align-items:center}
+.cv-icone{width:40px;height:40px;border-radius:10px;background:#e3f4fd;color:var(--azul-forte);display:flex;align-items:center;justify-content:center}
+.cabecalho-viagem h2{font-size:17px;font-weight:800}.cabecalho-viagem small{color:var(--cinza);font-size:12px}
+.cv-dir{display:flex;align-items:center;gap:12px;font-size:13px}
+.ao-vivo{background:#e5f7ec;color:#0f8a45;font-size:10px;font-weight:800;padding:4px 10px;border-radius:999px;letter-spacing:.5px}
+
+/* vendas do dia */
+.stats-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.stat{background:#fff;border:1px solid var(--borda);border-radius:12px;padding:18px}
+.stat small{color:var(--cinza);font-size:12px}
+.stat b{display:block;font-size:26px;font-weight:800;margin:6px 0 4px;letter-spacing:-.4px}
+.stat span{font-size:12px;font-weight:600}
+.etq-metodo{display:inline-block;padding:2px 10px;border-radius:5px;font-size:11px;font-weight:700}
+.mt-mpesa{background:#e5f7ec;color:#0f8a45}.mt-numerario{background:#eef1f6;color:#55657d}
+.mt-emola{background:#fff3d1;color:#9a6a00}.mt-cartao{background:#efe9ff;color:#6c47e8}
+
+@media(max-width:1000px){
+  .form-procura,.duas-colunas,.stats-3{grid-template-columns:1fr}
+  .metodos{grid-template-columns:repeat(2,1fr)}
+  .passos-venda{overflow-x:auto}
+}
+@media print{
+  .lateral,.topo,.nao-imprimir,.alerta{display:none!important}
+  body.painel{display:block;background:#fff}.conteudo{padding:0;max-width:none}
+  .cartao-bilhete{break-inside:avoid;box-shadow:none}
+}
+
+.etiqueta-transp{display:inline-block;background:#e3f4fd;color:#0b6fb0;font-size:12px;border-radius:999px;padding:5px 14px;margin:0 0 14px}

@@ -1,0 +1,64 @@
+/* assets/css/painel.css - layout do painel (menu lateral, topo, cartões) */
+body.painel{display:flex;min-height:100vh}
+body.perfil-administrador{--acento:var(--roxo);--acento-forte:#5636c9}
+
+.lateral{width:232px;flex:none;background:var(--navy);color:#cfd9ee;display:flex;flex-direction:column;
+  position:sticky;top:0;height:100vh}
+.faixa-bandeira{height:4px;background:linear-gradient(90deg,#0a9b4a 0 25%,#111 25% 50%,#f6c500 50% 75%,#d62828 75%)}
+.lateral-logo{padding:20px 20px 28px}
+.lateral-menu{display:flex;flex-direction:column;gap:2px;padding:0 10px;flex:1;overflow-y:auto}
+.lateral-menu a{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:8px;color:#b9c6e2;font-weight:500;font-size:13px}
+.lateral-menu a:hover{background:rgba(255,255,255,.06);color:#fff}
+.lateral-menu a.activo{background:rgba(255,255,255,.1);color:#fff;font-weight:600;box-shadow:inset 3px 0 0 var(--acento)}
+.lateral-menu a.activo .icone{color:var(--acento)}
+body.perfil-administrador .lateral-menu a.activo .icone{color:#a28bff}
+.lateral-rodape{display:flex;align-items:center;gap:6px;padding:14px;border-top:1px solid rgba(255,255,255,.08)}
+.utilizador-cartao{display:flex;align-items:center;gap:10px;flex:1;min-width:0;color:#fff}
+.utilizador-texto{display:flex;flex-direction:column;min-width:0}
+.utilizador-texto strong{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.utilizador-texto small{color:#8fa3c8;font-size:11px}
+.lateral-rodape .sair{color:#8fa3c8;padding:6px;border-radius:6px}
+.lateral-rodape .sair:hover{color:#fff;background:rgba(255,255,255,.08)}
+
+.conteudo-geral{flex:1;min-width:0;display:flex;flex-direction:column}
+.topo{height:58px;background:#fff;border-bottom:1px solid var(--borda);display:flex;align-items:center;
+  justify-content:space-between;padding:0 28px;gap:16px}
+.migalhas{font-size:12px;color:var(--cinza);display:flex;gap:8px;align-items:center}
+.migalhas .actual{color:var(--texto);font-weight:600}
+.topo-direita{display:flex;align-items:center;gap:14px}
+.pesquisa-topo{display:flex;align-items:center;gap:8px;background:var(--fundo);border:1px solid var(--borda);
+  border-radius:8px;padding:7px 12px;color:var(--cinza)}
+.pesquisa-topo input{border:0;background:none;outline:none;font:500 13px var(--fonte);width:190px}
+.sino{position:relative;background:none;border:0;color:var(--texto);cursor:pointer;padding:6px}
+.etiqueta-agencia{background:#e3f4fd;color:#0b6fb0;font-weight:600;font-size:12px;padding:5px 12px;border-radius:999px}
+body.perfil-administrador .etiqueta-agencia{background:var(--roxo-bg);color:var(--roxo)}
+
+.conteudo{padding:28px;max-width:1200px;width:100%}
+.titulo-pagina{font-size:24px;font-weight:800;letter-spacing:-.4px}
+.subtitulo-pagina{color:var(--cinza);margin:4px 0 22px}
+.cartoes-2{display:grid;grid-template-columns:1.15fr 1fr;gap:20px;align-items:start}
+.cartao{background:#fff;border:1px solid var(--borda);border-radius:14px;padding:24px}
+.cartao h2{font-size:16px;font-weight:700;margin-bottom:4px}
+.cartao .sub{color:var(--cinza);font-size:13px;margin:0 0 18px}
+.vazio{background:#fff;border:1px dashed #c9d3e3;border-radius:14px;padding:40px;text-align:center;color:var(--cinza)}
+.vazio h1{color:var(--texto);margin-bottom:8px;font-size:22px}
+
+/* perfil / dados pessoais */
+.foto-linha{display:flex;gap:16px;align-items:center;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--borda)}
+.foto-acoes{display:flex;gap:8px;margin-bottom:6px;flex-wrap:wrap}
+.foto-acoes input[type=file]{display:none}
+.foto-nota{font-size:11px;color:var(--cinza);margin:0}
+.acoes-form{display:flex;justify-content:flex-end;gap:10px;margin-top:6px}
+.forca{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:-6px 0 6px}
+.forca span{height:4px;border-radius:4px;background:var(--borda);transition:.2s}
+.forca-info{display:flex;justify-content:space-between;font-size:11px;color:var(--cinza);margin-bottom:14px}
+.forca-info b{font-weight:600}
+
+@media(max-width:900px){
+  body.painel{flex-direction:column}
+  .lateral{width:100%;height:auto;position:static}
+  .lateral-menu{flex-direction:row;flex-wrap:wrap;padding-bottom:10px}
+  .cartoes-2{grid-template-columns:1fr}
+  .pesquisa-topo{display:none}
+  .conteudo{padding:18px}
+}

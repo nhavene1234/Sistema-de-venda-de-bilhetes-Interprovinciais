@@ -1,0 +1,78 @@
+/* assets/css/auth.css - login e recuperação de palavra-passe */
+body.auth{background:#fff}
+.auth-grelha{display:grid;grid-template-columns:1fr 1fr;min-height:100vh}
+.auth-lado{background:var(--navy);color:#fff;padding:48px;display:flex;flex-direction:column;justify-content:space-between;
+  background-image:radial-gradient(circle at 20% 20%,rgba(30,161,230,.14),transparent 45%)}
+.auth-mapa{align-self:center;width:260px;max-width:70%;opacity:.95}
+.auth-lado h2{font-size:30px;font-weight:800;letter-spacing:-.5px;margin-bottom:10px}
+.auth-lado p{margin:0;color:#a9b9d6;font-size:13px}
+.auth-form{display:flex;align-items:center;justify-content:center;padding:48px 32px;background:#fff}
+.auth-form-interior{width:100%;max-width:400px}
+.auth-form h1{font-size:26px;font-weight:800;letter-spacing:-.4px;margin-bottom:4px}
+.auth-sub{color:var(--cinza);margin:0 0 22px;font-size:13px}
+.auth-linha{display:flex;justify-content:space-between;align-items:center;margin:4px 0 18px;font-size:13px}
+.auth-linha label{display:flex;align-items:center;gap:8px;color:var(--cinza);cursor:pointer}
+.separador{display:flex;align-items:center;gap:12px;color:var(--cinza);font-size:11px;letter-spacing:.5px;margin:22px 0 12px}
+.separador::before,.separador::after{content:"";flex:1;height:1px;background:var(--borda)}
+.demo-texto{font-size:12px;color:var(--cinza);margin-bottom:10px}
+.demo-botoes{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.demo-botoes button{border-radius:8px;padding:9px;font:600 12px var(--fonte);cursor:pointer;border:1px solid}
+.demo-bilheteiro{background:#eaf6fd;border-color:#bfe0f5;color:#0b6fb0}
+.demo-gestor{background:#e8f7ee;border-color:#b5e5c9;color:#0d7a3c}
+.demo-admin{background:var(--roxo-bg);border-color:#d6cbff;color:var(--roxo)}
+.auth-rodape{margin-top:48px;font-size:11px;color:var(--cinza)}
+
+/* recuperação (cartão central) */
+.auth-centro{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:var(--navy)}
+.cartao-rec{background:#fff;border-radius:16px;width:100%;max-width:440px;padding:30px 32px;text-align:center}
+.cartao-rec h1{font-size:21px;font-weight:800;margin:18px 0 6px}
+.cartao-rec .auth-sub{margin-bottom:20px}
+.passos{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:20px;font-size:12px;color:var(--cinza)}
+.passo{display:flex;align-items:center;gap:6px;font-weight:600}
+.passo b{width:22px;height:22px;border-radius:50%;border:1px solid var(--borda);display:inline-flex;align-items:center;justify-content:center;font-size:11px}
+.passo.feito b{background:var(--azul);border-color:var(--azul);color:#fff}
+.passo.actual{color:var(--texto)}
+.passo.actual b{border-color:var(--azul);color:var(--azul-forte)}
+.passo-linha{width:26px;height:1px;background:var(--borda)}
+.cartao-rec form{text-align:left}
+.cartao-rec .alerta{text-align:left}
+.codigo-caixas{display:flex;gap:10px;justify-content:space-between;margin:6px 0 14px}
+.codigo-caixa{width:100%;min-width:0;height:48px;text-align:center;font:700 20px var(--fonte);border:1px solid var(--borda);border-radius:8px;outline:none}
+.codigo-caixa:focus{border-color:var(--azul);box-shadow:0 0 0 3px rgba(30,161,230,.15)}
+.rec-linha{display:flex;justify-content:space-between;font-size:12px;color:var(--cinza);margin-bottom:16px}
+.cartao-rec .btn+.btn{margin-top:10px}
+/* ---------- login: mapa das províncias + cartão branco (apenas body.auth-login) ---------- */
+body.auth-login{background:linear-gradient(135deg,var(--navy) 0%,var(--navy-2) 100%);min-height:100vh}
+.auth-login .auth-lado{background-color:transparent;align-items:center;justify-content:center;gap:24px;padding:40px 32px}
+.auth-login .auth-lado .auth-lado-titulo{font-size:17px;font-weight:500;letter-spacing:0;margin:0;text-align:center;color:#fff}
+.auth-login .auth-mapa{align-self:center;width:min(100%,500px);max-width:100%;height:auto;max-height:74vh;opacity:1}
+.auth-login .auth-mapa text{fill:#fff;font-size:14px;font-family:var(--fonte)}
+.auth-login .auth-form{background:transparent;padding:40px 32px}
+.auth-login .auth-form-interior{max-width:420px}
+.auth-cartao{background:#fff;border-radius:16px;padding:34px 36px 30px;box-shadow:0 18px 50px rgba(0,0,0,.35)}
+.auth-login .auth-logo{display:flex;justify-content:center;margin-bottom:22px}
+.auth-login .auth-form h1{text-align:center;font-size:24px}
+.auth-login .auth-sub{text-align:center;margin-bottom:26px}
+.campo-icone{position:relative}
+.campo-icone .campo-ic{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:18px;height:18px;color:var(--cinza);pointer-events:none}
+.auth-login .campo-icone input{padding-left:40px}
+.auth-login .campo-senha input{padding-right:44px}
+.alternar-icone{display:flex;align-items:center;justify-content:center;width:22px;height:22px;padding:0;color:var(--cinza)}
+.alternar-icone svg{width:18px;height:18px}
+.alternar-icone .ic-ver{display:none}
+.alternar-icone.visivel .ic-ver{display:block}
+.alternar-icone.visivel .ic-ocultar{display:none}
+.auth-login .auth-linha{font-size:12px;margin:2px 0 20px;gap:8px;flex-wrap:wrap}
+.auth-login .auth-linha label{white-space:nowrap}
+.auth-login .auth-linha input[type=checkbox]{width:14px;height:14px;accent-color:var(--azul)}
+.auth-login .btn-bloco{padding:13px 16px}
+.auth-criar{margin-top:22px;border:1px solid var(--borda);border-radius:8px;padding:14px;text-align:center;font-size:12px;color:var(--cinza)}
+.auth-criar a{font-weight:600}
+.auth-fora{margin:18px 0 0;text-align:center;font-size:12px;color:#a9b9d6}
+.auth-fora a{color:#cfe3ff}
+.auth-login .auth-rodape{margin-top:8px;font-size:11px;color:#a9b9d6;text-align:center}
+@media(max-width:860px){
+  .auth-grelha{grid-template-columns:1fr}
+  .auth-lado{display:none}
+  .auth-cartao{padding:28px 22px 24px}
+}

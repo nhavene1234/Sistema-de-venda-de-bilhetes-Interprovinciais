@@ -1,0 +1,112 @@
+/* assets/css/admin.css - componentes das telas do Administrador */
+/* topo e menu lateral do administrador */
+body.perfil-administrador .migalhas{gap:26px}
+body.perfil-administrador .migalhas .sep{display:none}
+body.perfil-administrador .lateral-menu a.activo{background:linear-gradient(90deg,rgba(108,71,232,.3),rgba(108,71,232,.06))}
+.filtro-topo select{border:1px solid var(--borda);border-radius:8px;padding:7px 10px;font:600 12px var(--fonte);background:#fff;color:var(--texto)}
+
+.estatisticas{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px}
+.estat{background:#fff;border:1px solid var(--borda);border-radius:12px;padding:18px}
+.estat small{color:var(--cinza);font-size:12px}
+.estat strong{display:block;font-size:30px;font-weight:800;margin:6px 0 2px}
+.estat .var{font-size:12px;color:var(--ok);font-weight:600}
+.estat .neutro{font-size:12px;color:var(--cinza)}
+.estat.destaque strong{color:var(--roxo)}
+.divisao{display:grid;grid-template-columns:1.9fr 1fr;gap:24px}
+.mapa-caixa{background:#f4f6fa;border-radius:12px;padding:10px;text-align:center}
+.mapa-caixa svg{max-width:100%;height:440px}
+.mapa-caixa text{font-family:var(--fonte);font-size:15px;fill:#33415c}
+.cidades{border-left:1px solid var(--borda);padding-left:24px}
+.cidades h3,.cartao .cidades h3{font-size:13px;font-weight:700;letter-spacing:.6px;color:var(--cinza);margin-bottom:16px}
+.cidade-linha{margin-bottom:12px;font-size:13px}
+.cidade-linha div:first-child{display:flex;justify-content:space-between;margin-bottom:4px}
+.cidade-linha .mono{color:var(--cinza);font-size:12px}
+.barra{height:5px;background:#e8ecf4;border-radius:4px;overflow:hidden}
+.barra i{display:block;height:100%;background:var(--roxo);border-radius:4px}
+
+.cabecalho-pagina{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap}
+.filtros{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;align-items:center}
+.filtros input[type=search],.filtros select{border:1px solid var(--borda);border-radius:8px;padding:9px 12px;font:500 13px var(--fonte);background:#fff;color:var(--texto)}
+.filtros input[type=search]{min-width:240px}
+
+.tabela{width:100%;border-collapse:collapse}
+.tabela th{font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--cinza);text-align:left;padding:10px 12px;border-bottom:1px solid var(--borda);font-weight:600}
+.tabela td{padding:12px;border-bottom:1px solid #eef1f6;vertical-align:middle}
+.tabela tr:last-child td{border-bottom:0}
+.tabela .acoes{text-align:right;white-space:nowrap}
+.tabela .acoes form{display:inline}
+.celula-utilizador{display:flex;align-items:center;gap:12px}
+.celula-utilizador strong{display:block;font-size:13px}
+.celula-utilizador small{color:var(--cinza);font-size:12px}
+.tabela-rolar{overflow-x:auto}
+.rodape-tabela{display:flex;justify-content:space-between;align-items:center;padding-top:14px;font-size:12px;color:var(--cinza)}
+.paginacao{display:flex;gap:8px}
+
+.etq{display:inline-block;padding:3px 10px;border-radius:6px;font-size:11px;font-weight:600}
+.etq-passageiro{background:#eef1f6;color:#55657d}
+.etq-bilheteiro{background:#e3f4fd;color:#0b6fb0}
+.etq-cobrador{background:#efe9ff;color:#6c47e8}
+.etq-gestor{background:#e6f7ee;color:#0d8a45}
+.etq-administrador{background:#fff1d6;color:#b76e00}
+.etq-activo{background:transparent;color:var(--ok);padding-left:0}
+.etq-bloqueado{background:var(--erro-bg);color:var(--erro)}
+.btn-tabela{background:#fff;border:1px solid var(--borda);border-radius:6px;padding:5px 10px;font:600 12px var(--fonte);cursor:pointer;color:var(--texto);margin-left:4px}
+.btn-tabela:hover{background:#f4f6fa}
+
+/* modal */
+dialog.modal{border:0;border-radius:16px;padding:26px;width:92%;max-width:460px;box-shadow:0 20px 60px rgba(10,33,80,.35)}
+dialog.modal::backdrop{background:rgba(15,27,52,.55)}
+dialog.modal h2{font-size:20px;font-weight:800;margin-bottom:4px}
+dialog.modal .sub{color:var(--cinza);font-size:13px;margin:0 0 18px}
+.requerido{color:var(--erro)}
+.caixa-info{background:var(--roxo-bg);border:1px solid #d6cbff;color:#4a2fb5;border-radius:8px;padding:12px;font-size:12px;margin-bottom:16px}
+.caixa-info strong{display:block;margin-bottom:2px}
+.modal-acoes{display:flex;justify-content:flex-end;gap:10px}
+
+/* matriz de permissões */
+.matriz th.centro,.matriz td.centro{text-align:center;width:120px}
+.matriz tr.alerta-linha td{background:#fff6d9}
+.etq-alerta{background:#f08a24;color:#fff;font-size:10px;padding:2px 7px;border-radius:4px;margin-left:8px;font-weight:700}
+.interruptor{position:relative;display:inline-block;width:40px;height:22px}
+.interruptor input{opacity:0;width:0;height:0}
+.interruptor span{position:absolute;inset:0;background:#cfd6e4;border-radius:22px;cursor:pointer;transition:.2s}
+.interruptor span::before{content:"";position:absolute;width:16px;height:16px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s}
+.interruptor input:checked+span{background:var(--roxo)}
+.interruptor input:checked+span::before{transform:translateX(18px)}
+.interruptor input:disabled+span{opacity:.55;cursor:not-allowed}
+.nota-aviso{display:flex;gap:8px;align-items:center;font-size:12px;color:#8a6200;padding-top:14px}
+
+/* transportadoras */
+.grelha-transp{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px}
+.cartao-transp{background:#fff;border:1px solid var(--borda);border-radius:14px;padding:20px}
+.cartao-transp header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:2px}
+.cartao-transp h3{font-size:17px;font-weight:800}
+.cartao-transp .tipo{color:var(--cinza);font-size:12px;margin:0 0 14px}
+.etq-estado-activa{background:#e6f7ee;color:#0d8a45}
+.etq-estado-inactiva{background:#eef1f6;color:#55657d}
+.dados-transp{background:#f7f9fc;border-radius:10px;padding:12px;font-size:12px;margin-bottom:14px}
+.dados-transp div{display:flex;justify-content:space-between;padding:3px 0;color:var(--cinza)}
+.dados-transp b{color:var(--texto);font-weight:700}
+.rodape-cartao{display:flex;justify-content:space-between;align-items:center}
+
+/* auditoria */
+.ponto{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:8px}
+.ponto-verde{background:#12a150}.ponto-laranja{background:#f08a24}.ponto-vermelho{background:#e5484d}
+.detalhe-log{color:var(--cinza)}
+.tres-cartoes{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:22px}
+.tres-cartoes .cartao{padding:20px}
+.tres-cartoes h2{font-size:15px}
+.caixa-cinza{background:#f7f9fc;border-radius:10px;padding:12px;font-size:12px;margin:12px 0}
+.caixa-cinza div{display:flex;justify-content:space-between;padding:2px 0;color:var(--cinza)}
+.caixa-cinza b{color:var(--texto)}
+.uptime-barras{display:flex;gap:6px;margin:12px 0 6px}
+.uptime-barras i{flex:1;height:26px;background:#12a150;border-radius:4px}
+.uptime-dias{display:flex;gap:6px;font-size:10px;color:var(--cinza)}
+.uptime-dias span{flex:1;text-align:center}
+.pequeno{font-size:11px;color:var(--cinza)}
+
+@media(max-width:1000px){
+  .estatisticas{grid-template-columns:repeat(2,1fr)}
+  .divisao,.tres-cartoes{grid-template-columns:1fr}
+  .cidades{border-left:0;padding-left:0}
+}
