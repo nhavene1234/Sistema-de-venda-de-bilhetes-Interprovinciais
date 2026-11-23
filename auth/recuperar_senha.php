@@ -48,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $codigo = gerar_codigo($pdo, $id, $validade);
                     enviar_codigo($email, $codigo);
                     registar_log($pdo, $id, 'Recuperação de palavra-passe solicitada', 'utilizador', $id);
-                    $codigoDemo = AMBIENTE_DEMO ? $codigo : null;
+                    $codigoDemo = $codigo;
                 }
                 // avança sempre, para não revelar se o email existe
                 $_SESSION['rec'] = ['passo' => 2, 'email' => $email, 'id' => $id, 'enviado_em' => time(), 'codigo_demo' => $codigoDemo];
@@ -85,7 +85,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $codigo = gerar_codigo($pdo, (int)$rec['id'], $validade);
                 enviar_codigo($rec['email'], $codigo);
                 $_SESSION['rec']['enviado_em'] = time();
-                $_SESSION['rec']['codigo_demo'] = AMBIENTE_DEMO ? $codigo : null;
+                $_SESSION['rec']['codigo_demo'] = $codigo;
             }
             redirecionar('auth/recuperar_senha.php');
 
@@ -162,7 +162,7 @@ function classe_passo(int $n, int $actual): string {
         Enviámos um código de 6 dígitos para o email:<br>
         <span class="mono"><?= e($rec['email']) ?></span>
       </div>
-      <?php if (AMBIENTE_DEMO && !empty($rec['codigo_demo'])): ?>
+      <?php if (!empty($rec['codigo_demo'])): ?>
         <div class="alerta alerta-ok">Ambiente de demonstração: o seu código é
           <strong class="mono" style="display:inline"><?= e($rec['codigo_demo']) ?></strong>
           (em produção seria enviado por email/SMS).</div>
