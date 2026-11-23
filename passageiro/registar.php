@@ -80,13 +80,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="pt">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Criar conta · <?= e(APP_NOME) ?></title>
-  <link href="https://googleapis.com" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="<?= e(url('assets/css/base.css')) ?>">
   <link rel="stylesheet" href="<?= e(url('assets/css/auth.css')) ?>">
 </head>
@@ -169,3 +170,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?= csrf_campo() ?>
         <div class="campo"><label for="nome">Nome completo</label>
           <input type="text" id="nome" name="nome" value="<?= e($v['nome']) ?>" required autofocus></div>
+        <div class="linha-2">
+          <div class="campo"><label for="telefone">Telemóvel (+258)</label>
+            <input type="tel" id="telefone" name="telefone" value="<?= e($v['telefone']) ?>" inputmode="numeric" maxlength="12" placeholder="84 123 4567" required></div>
+          <div class="campo"><label for="email">Email</label>
+            <input type="email" id="email" name="email" value="<?= e($v['email']) ?>" placeholder="nome@email.co.mz" required></div>
+        </div>
+        <?php if ($temDocumento): ?>
+        <div class="campo"><label for="documento">Número de documento (BI ou passaporte)</label>
+          <input type="text" id="documento" name="documento" value="<?= e($v['documento']) ?>" maxlength="20" required></div>
+        <?php endif; ?>
+        <div class="linha-2">
+          <div class="campo"><label for="senha">Palavra-passe</label>
+            <div class="campo-senha"><input type="password" id="senha" name="senha" minlength="8" required>
+              <button type="button" class="alternar" data-alternar-senha="senha">Mostrar</button></div></div>
+          <div class="campo"><label for="confirmar">Confirmar</label>
+            <div class="campo-senha"><input type="password" id="confirmar" name="confirmar" minlength="8" required>
+              <button type="button" class="alternar" data-alternar-senha="confirmar">Mostrar</button></div></div>
+        </div>
+        <p class="auth-sub" style="margin:-4px 0 12px;font-size:12px">Mínimo de 8 caracteres, com letras e números.</p>
+        <label style="display:flex;gap:10px;align-items:flex-start;font-size:13px;color:var(--cinza);margin-bottom:16px">
+          <input type="checkbox" name="termos" value="1" style="margin-top:3px" <?= !empty($_POST['termos']) ? 'checked' : '' ?>>
+          <span>Aceito os termos de utilização e a política de privacidade.</span></label>
+        <button class="btn btn-primario btn-bloco" type="submit">Criar conta</button>
+      </form>
+      <p class="auth-sub" style="margin-top:18px;text-align:center">Já tem conta? <a href="<?= e(url('auth/login.php')) ?>"><b>Entrar</b></a></p>
+<?php endif; ?>
+    </div>
+  </section>
+</div>
+<script src="<?= e(url('assets/js/auth.js')) ?>"></script>
+</body>
+</html>
