@@ -44,10 +44,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $st->execute([$idT]);
                     if (!$st->fetchColumn()) { flash('erro', 'Escolha a transportadora do utilizador.'); redirecionar('administrador/utilizadores.php'); }
                 }
-                $tmp = gerar_senha_temporaria();
-                $pdo->prepare('INSERT INTO utilizador (nome, email, telefone, senha, perfil, id_transportadora) VALUES (?,?,?,?,?,?)')
-                    ->execute([$nome, $email, $telN ? telefone_guardar($telN) : null, password_hash($tmp, PASSWORD_DEFAULT), $perfil, $idT]);
-                registar_log($pdo, (int)$eu['id_utilizador'], 'Utilizador criado', 'utilizador', (int)$pdo->lastInsertId(), "$nome ($perfil)");
+                                $tmp = gerar_senha_temporaria();
+                $driver = $pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
+                if ($driver === 'pgsql') {
+                    $stIns = $pdo->prepare('INSERT INTO utilizador (nome, email, telefone, senha, perfil, id_transportadora) VALUES (?,?,?,?,?,?) RETURNING id_utilizador');
+                    $stIns->execute([$nome, $email, $telN ? telefone_guardar($telN) : null, password_hash($tmp, PASSWORD_DEFAULT), $perfil, $idT]);
+                    $novoId = (int)$stIns->fetchColumn();
+                } else {
+                    $pdo->prepare('INSERT INTO utilizador (nome, email, telefone, senha, perfil, id_transportadora) VALUES (?,?,?,?,?,?)')
+                        ->execute([$nome, $email, $telN ? telefone_guardar($telN) : null, password_hash($tmp, PASSWORD_DEFAULT), $perfil, $idT]);
+                    $novoId = (int)$pdo->lastInsertId();
+                }
+                registar_log($pdo, (int)$eu['id_utilizador'], 'Utilizador criado', 'utilizador', $novoId, "$nome ($perfil)");
+
                 flash('ok', "Utilizador criado. Palavra-passe temporária: $tmp — comunique-a ao utilizador e peça-lhe para a alterar no primeiro acesso."
                     . ($perfil === 'cobrador' && $idT === null ? ' O cobrador ainda não tem transportadora: o gestor da transportadora deve associá-lo (menu Cobradores).' : ''));
             }

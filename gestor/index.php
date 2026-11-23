@@ -31,11 +31,12 @@ foreach ($st->fetchAll() as $r) {
 $ocupMedia = $capTotal ? (int)round($ocTotal / $capTotal * 100) : 0;
 $textoOcup = !$capTotal ? 'Sem viagens programadas' : ($ocupMedia >= 85 ? 'Quase lotado' : ($ocupMedia >= 60 ? 'Capacidade ideal' : 'Lugares livres'));
 
-// viagens nas próximas 24 horas
+// viagens nas próximas 24 horas (compatível com PostgreSQL e MySQL)
 $agora = date('Y-m-d H:i:s'); $limite = date('Y-m-d H:i:s', strtotime('+24 hours'));
-$st = $pdo->prepare("SELECT COUNT(*) AS n, SUM(v.estado = 'cancelada') AS canc FROM viagem v JOIN rota ro ON ro.id_rota = v.id_rota
+$st = $pdo->prepare("SELECT COUNT(*) AS n, COALESCE(SUM(CASE WHEN v.estado = 'cancelada' THEN 1 ELSE 0 END), 0) AS canc
+                     FROM viagem v JOIN rota ro ON ro.id_rota = v.id_rota
                      WHERE ro.id_transportadora = ? AND v.estado IN ('agendada','em_curso','cancelada')
-                       AND CONCAT(v.data, ' ', v.hora_partida) BETWEEN ? AND ?");
+                       AND CONCAT(CAST(v.data AS VARCHAR), ' ', CAST(v.hora_partida AS VARCHAR)) BETWEEN ? AND ?");
 $st->execute([$idT, $agora, $limite]);
 $vi = $st->fetch();
 $viagensActivas = (int)$vi['n'] - (int)$vi['canc'];

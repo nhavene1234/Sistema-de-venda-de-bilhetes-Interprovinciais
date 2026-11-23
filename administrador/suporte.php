@@ -36,7 +36,7 @@ $offset = ($pagina - 1) * $porPagina;
 $st = $pdo->prepare("SELECT p.*, (SELECT m.texto FROM suporte_mensagem m WHERE m.id_pedido = p.id_pedido ORDER BY m.id_mensagem DESC LIMIT 1) AS ultima,
                             (SELECT m.autor FROM suporte_mensagem m WHERE m.id_pedido = p.id_pedido ORDER BY m.id_mensagem DESC LIMIT 1) AS ultimo_autor
                      FROM suporte_pedido p WHERE $cond
-                     ORDER BY FIELD(p.estado, 'aberto', 'em_curso', 'resolvido'), p.data_actualizacao DESC LIMIT $porPagina OFFSET $offset");
+                     ORDER BY CASE p.estado WHEN 'aberto' THEN 1 WHEN 'em_curso' THEN 2 WHEN 'resolvido' THEN 3 ELSE 4 END, p.data_actualizacao DESC LIMIT $porPagina OFFSET $offset");
 $st->execute($p);
 $lista = $st->fetchAll();
 

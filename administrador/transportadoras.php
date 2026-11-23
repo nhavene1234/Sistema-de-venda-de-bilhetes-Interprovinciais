@@ -28,12 +28,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $st->execute([$nuit]);
             if ($st->fetchColumn() > 0) {
                 flash('erro', 'Já existe uma transportadora com este NUIT.');
-            } else {
-                $pdo->prepare('INSERT INTO transportadora (nome, nuit, contacto, endereco) VALUES (?,?,?,?)')
-                    ->execute([$nome, $nuit, $contacto, $endereco ?: null]);
-                registar_log($pdo, (int)$eu['id_utilizador'], 'Transportadora adicionada', 'transportadora', (int)$pdo->lastInsertId(), $nome);
+                        } else {
+                $driver = $pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
+                if ($driver === 'pgsql') {
+                    $stIns = $pdo->prepare('INSERT INTO transportadora (nome, nuit, contacto, endereco) VALUES (?,?,?,?) RETURNING id_transportadora');
+                    $stIns->execute([$nome, $nuit, $contacto, $endereco ?: null]);
+                    $novoId = (int)$stIns->fetchColumn();
+                } else {
+                    $pdo->prepare('INSERT INTO transportadora (nome, nuit, contacto, endereco) VALUES (?,?,?,?)')
+                        ->execute([$nome, $nuit, $contacto, $endereco ?: null]);
+                    $novoId = (int)$pdo->lastInsertId();
+                }
+                registar_log($pdo, (int)$eu['id_utilizador'], 'Transportadora adicionada', 'transportadora', $novoId, $nome);
                 flash('ok', "Transportadora $nome adicionada.");
             }
+
         }
     } elseif ($acao === 'alternar') {
         $id = (int)($_POST['id'] ?? 0);
