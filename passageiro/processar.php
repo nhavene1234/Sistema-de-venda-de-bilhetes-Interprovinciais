@@ -52,41 +52,65 @@ $recusado = $telefone !== null && substr($telefone, -2) === '00';
 $agora = date('Y-m-d H:i:s');
 
 try {
-    $pdo->beginTransaction();   // pagamento de todos os lugares: ou todos ficam pagos, ou nenhum
-    $stPag = $pdo->prepare('SELECT id_pagamento FROM pagamento WHERE id_reserva = ?');
-    $stBil = $pdo->prepare('SELECT COUNT(*) FROM bilhete WHERE id_reserva = ?');
+    $pdo->beginTransaction();
 
     foreach ($reservas as $r) {
         $idR = (int)$r['id_reserva'];
         $valor = (float)$r['preco'];
 
+        $stPag = $pdo->prepare('SELECT id_pagamento FROM pagamento WHERE id_reserva = ?');
         $stPag->execute([$idR]);
-        if (!(int)$stPag->fetchColumn()) {
-            $pdo->prepare("INSERT INTO pagamento (valor, metodo, estado, id_reserva) VALUES (?, ?, 'pendente', ?)")->execute([$valor, $metodo, $idR]);
+        $existePag = (int)$stPag->fetchColumn();
+        $stPag->closeCursor();
+
+        if (!$existePag) {
+            $insPag = $pdo->prepare("INSERT INTO pagamento (valor, metodo, estado, id_reserva) VALUES (?, ?, 'pendente', ?)");
+            $insPag->execute([$valor, $metodo, $idR]);
+            $insPag->closeCursor();
         }
 
         if ($recusado) {
             $codigo = strtoupper($metodo === 'mpesa' ? 'MPESA' : 'EMOLA') . '-DECLINED-04';
-            $pdo->prepare("UPDATE pagamento SET estado = 'falhado', metodo = ?, telefone_pagamento = ?, motivo_falha = ?, valor = ? WHERE id_reserva = ?")
-                ->execute([$metodo, $telefone, $codigo, $valor, $idR]);
-            registar_log($pdo, (int)$u['id_utilizador'], 'Pagamento recusado', 'reserva', $idR, $codigo);
+            $updPag = $pdo->prepare("UPDATE pagamento SET estado = 'falhado', metodo = ?, telefone_pagamento = ?, motivo_falha = ?, valor = ? WHERE id_reserva = ?");
+            $updPag->execute([$metodo, $telefone, $codigo, $valor, $idR]);
+            $updPag->closeCursor();
         } else {
-            $pdo->prepare("UPDATE pagamento SET estado = 'confirmado', metodo = ?, telefone_pagamento = ?, motivo_falha = NULL,
-                           valor = ?, data_pagamento = ?, referencia_transacao = ? WHERE id_reserva = ?")
-                ->execute([$metodo, $telefone, $valor, $agora, $r['referencia'], $idR]);
-            $pdo->prepare("UPDATE reserva SET estado = 'confirmada', data_expiracao = NULL WHERE id_reserva = ?")->execute([$idR]);
+            $updPag = $pdo->prepare("UPDATE pagamento SET estado = 'confirmado', metodo = ?, telefone_pagamento = ?, motivo_falha = NULL,
+                                     valor = ?, data_pagamento = ?, referencia_transacao = ? WHERE id_reserva = ?");
+            $updPag->execute([$metodo, $telefone, $valor, $agora, $r['referencia'], $idR]);
+            $updPag->closeCursor();
+
+            $updRes = $pdo->prepare("UPDATE reserva SET estado = 'confirmada', data_expiracao = NULL WHERE id_reserva = ?");
+            $updRes->execute([$idR]);
+            $updRes->closeCursor();
+
+            $stBil = $pdo->prepare('SELECT COUNT(*) FROM bilhete WHERE id_reserva = ?');
             $stBil->execute([$idR]);
-            if (!$stBil->fetchColumn()) {   // RN05: bilhete só após confirmação; um código único por lugar
-                $pdo->prepare("INSERT INTO bilhete (codigo_qr, estado, id_reserva) VALUES (?, 'valido', ?)")
-                    ->execute([$r['referencia'] . '-' . strtoupper(bin2hex(random_bytes(8))), $idR]);
+            $existeBil = (int)$stBil->fetchColumn();
+            $stBil->closeCursor();
+
+            if (!$existeBil) {
+                $insBil = $pdo->prepare("INSERT INTO bilhete (codigo_qr, estado, id_reserva) VALUES (?, 'valido', ?)");
+                $insBil->execute([$r['referencia'] . '-' . strtoupper(bin2hex(random_bytes(8))), $idR]);
+                $insBil->closeCursor();
             }
-            registar_log($pdo, (int)$u['id_utilizador'], 'Pagamento confirmado', 'reserva', $idR, $r['referencia']);
         }
     }
     $pdo->commit();
 } catch (PDOException $e) {
     if ($pdo->inTransaction()) $pdo->rollBack();
-    flash('erro', 'Não foi possível processar o pagamento. Tente novamente.');
+    flash('erro', 'Não foi possível processar o pagamento: ' . $e->getMessage());
     redirecionar($voltar);
 }
+
+foreach ($reservas as $r) {
+    $idR = (int)$r['id_reserva'];
+    if ($recusado) {
+        $codigo = strtoupper($metodo === 'mpesa' ? 'MPESA' : 'EMOLA') . '-DECLINED-04';
+        registar_log($pdo, (int)$u['id_utilizador'], 'Pagamento recusado', 'reserva', $idR, $codigo);
+    } else {
+        registar_log($pdo, (int)$u['id_utilizador'], 'Pagamento confirmado', 'reserva', $idR, $r['referencia']);
+    }
+}
+
 redirecionar('passageiro/a_processar.php?reserva=' . $ids[0] . (count($ids) > 1 ? '&reservas=' . $listaIds : ''));
