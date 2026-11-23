@@ -30,25 +30,51 @@ const SP_RESPOSTAS = [
 
 function suporte_garantir_tabelas(PDO $pdo): void {
     if (!empty($_SESSION['sp_tabelas_ok'])) return;
-    $pdo->exec("CREATE TABLE IF NOT EXISTS suporte_pedido (
-      id_pedido INT UNSIGNED NOT NULL AUTO_INCREMENT, id_passageiro INT UNSIGNED NULL,
-      nome_contacto VARCHAR(100) NOT NULL, contacto VARCHAR(120) NOT NULL,
-      categoria ENUM('senha','pagamento','bilhete','reserva','transportadora','conta','outro') NOT NULL,
-      id_reserva INT UNSIGNED NULL, assunto VARCHAR(150) NOT NULL,
-      estado ENUM('aberto','em_curso','resolvido') NOT NULL DEFAULT 'aberto', id_admin INT UNSIGNED NULL,
-      ip VARCHAR(45) NULL, data_criacao DATETIME NOT NULL, data_actualizacao DATETIME NOT NULL,
-      PRIMARY KEY (id_pedido), KEY idx_sp_estado (estado, data_actualizacao), KEY idx_sp_passageiro (id_passageiro), KEY idx_sp_ip (ip, data_criacao),
-      CONSTRAINT fk_sp_passageiro FOREIGN KEY (id_passageiro) REFERENCES utilizador (id_utilizador) ON UPDATE CASCADE ON DELETE SET NULL,
-      CONSTRAINT fk_sp_admin FOREIGN KEY (id_admin) REFERENCES utilizador (id_utilizador) ON UPDATE CASCADE ON DELETE SET NULL,
-      CONSTRAINT fk_sp_reserva FOREIGN KEY (id_reserva) REFERENCES reserva (id_reserva) ON UPDATE CASCADE ON DELETE SET NULL
-    ) ENGINE=InnoDB");
-    $pdo->exec("CREATE TABLE IF NOT EXISTS suporte_mensagem (
-      id_mensagem INT UNSIGNED NOT NULL AUTO_INCREMENT, id_pedido INT UNSIGNED NOT NULL,
-      autor ENUM('passageiro','administrador') NOT NULL, id_utilizador INT UNSIGNED NULL,
-      texto TEXT NOT NULL, data_hora DATETIME NOT NULL,
-      PRIMARY KEY (id_mensagem), KEY idx_spm_pedido (id_pedido, id_mensagem), KEY idx_spm_data (autor, data_hora),
-      CONSTRAINT fk_spm_pedido FOREIGN KEY (id_pedido) REFERENCES suporte_pedido (id_pedido) ON UPDATE CASCADE ON DELETE CASCADE
-    ) ENGINE=InnoDB");
+    $driver = $pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
+    if ($driver === 'pgsql') {
+        $pdo->exec("CREATE TABLE IF NOT EXISTS suporte_pedido (
+          id_pedido SERIAL PRIMARY KEY,
+          id_passageiro INTEGER NULL REFERENCES utilizador (id_utilizador) ON UPDATE CASCADE ON DELETE SET NULL,
+          nome_contacto VARCHAR(100) NOT NULL,
+          contacto VARCHAR(120) NOT NULL,
+          categoria VARCHAR(20) NOT NULL CHECK (categoria IN ('senha','pagamento','bilhete','reserva','transportadora','conta','outro')),
+          id_reserva INTEGER NULL REFERENCES reserva (id_reserva) ON UPDATE CASCADE ON DELETE SET NULL,
+          assunto VARCHAR(150) NOT NULL,
+          estado VARCHAR(20) NOT NULL DEFAULT 'aberto' CHECK (estado IN ('aberto','em_curso','resolvido')),
+          id_admin INTEGER NULL REFERENCES utilizador (id_utilizador) ON UPDATE CASCADE ON DELETE SET NULL,
+          ip VARCHAR(45) NULL,
+          data_criacao TIMESTAMP NOT NULL,
+          data_actualizacao TIMESTAMP NOT NULL
+        )");
+        $pdo->exec("CREATE TABLE IF NOT EXISTS suporte_mensagem (
+          id_mensagem SERIAL PRIMARY KEY,
+          id_pedido INTEGER NOT NULL REFERENCES suporte_pedido (id_pedido) ON UPDATE CASCADE ON DELETE CASCADE,
+          autor VARCHAR(20) NOT NULL CHECK (autor IN ('passageiro','administrador')),
+          id_utilizador INTEGER NULL,
+          texto TEXT NOT NULL,
+          data_hora TIMESTAMP NOT NULL
+        )");
+    } else {
+        $pdo->exec("CREATE TABLE IF NOT EXISTS suporte_pedido (
+          id_pedido INT UNSIGNED NOT NULL AUTO_INCREMENT, id_passageiro INT UNSIGNED NULL,
+          nome_contacto VARCHAR(100) NOT NULL, contacto VARCHAR(120) NOT NULL,
+          categoria ENUM('senha','pagamento','bilhete','reserva','transportadora','conta','outro') NOT NULL,
+          id_reserva INT UNSIGNED NULL, assunto VARCHAR(150) NOT NULL,
+          estado ENUM('aberto','em_curso','resolvido') NOT NULL DEFAULT 'aberto', id_admin INT UNSIGNED NULL,
+          ip VARCHAR(45) NULL, data_criacao DATETIME NOT NULL, data_actualizacao DATETIME NOT NULL,
+          PRIMARY KEY (id_pedido), KEY idx_sp_estado (estado, data_actualizacao), KEY idx_sp_passageiro (id_passageiro), KEY idx_sp_ip (ip, data_criacao),
+          CONSTRAINT fk_sp_passageiro FOREIGN KEY (id_passageiro) REFERENCES utilizador (id_utilizador) ON UPDATE CASCADE ON DELETE SET NULL,
+          CONSTRAINT fk_sp_admin FOREIGN KEY (id_admin) REFERENCES utilizador (id_utilizador) ON UPDATE CASCADE ON DELETE SET NULL,
+          CONSTRAINT fk_sp_reserva FOREIGN KEY (id_reserva) REFERENCES reserva (id_reserva) ON UPDATE CASCADE ON DELETE SET NULL
+        ) ENGINE=InnoDB");
+        $pdo->exec("CREATE TABLE IF NOT EXISTS suporte_mensagem (
+          id_mensagem INT UNSIGNED NOT NULL AUTO_INCREMENT, id_pedido INT UNSIGNED NOT NULL,
+          autor ENUM('passageiro','administrador') NOT NULL, id_utilizador INT UNSIGNED NULL,
+          texto TEXT NOT NULL, data_hora DATETIME NOT NULL,
+          PRIMARY KEY (id_mensagem), KEY idx_spm_pedido (id_pedido, id_mensagem), KEY idx_spm_data (autor, data_hora),
+          CONSTRAINT fk_spm_pedido FOREIGN KEY (id_pedido) REFERENCES suporte_pedido (id_pedido) ON UPDATE CASCADE ON DELETE CASCADE
+        ) ENGINE=InnoDB");
+    }
     $_SESSION['sp_tabelas_ok'] = true;
 }
 
@@ -71,14 +97,26 @@ function sp_criar_pedido(PDO $pdo, ?int $idPass, string $nome, string $contacto,
                          string $texto, string $autor = 'passageiro', ?int $idAutor = null): int {
     $agora = date('Y-m-d H:i:s');
     $estado = $autor === 'administrador' ? 'em_curso' : 'aberto';
-    $pdo->prepare('INSERT INTO suporte_pedido (id_passageiro, nome_contacto, contacto, categoria, id_reserva, assunto, estado, id_admin, ip, data_criacao, data_actualizacao)
-                   VALUES (?,?,?,?,?,?,?,?,?,?,?)')
-        ->execute([$idPass, $nome, $contacto, $cat, $idReserva, SP_CATEGORIAS[$cat][0], $estado,
-                   $autor === 'administrador' ? $idAutor : null, ip_cliente(), $agora, $agora]);
-    $id = (int)$pdo->lastInsertId();
+    $driver = $pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
+
+    if ($driver === 'pgsql') {
+        $st = $pdo->prepare('INSERT INTO suporte_pedido (id_passageiro, nome_contacto, contacto, categoria, id_reserva, assunto, estado, id_admin, ip, data_criacao, data_actualizacao)
+                             VALUES (?,?,?,?,?,?,?,?,?,?,?) RETURNING id_pedido');
+        $st->execute([$idPass, $nome, $contacto, $cat, $idReserva, SP_CATEGORIAS[$cat][0], $estado,
+                      $autor === 'administrador' ? $idAutor : null, ip_cliente(), $agora, $agora]);
+        $id = (int)$st->fetchColumn();
+    } else {
+        $pdo->prepare('INSERT INTO suporte_pedido (id_passageiro, nome_contacto, contacto, categoria, id_reserva, assunto, estado, id_admin, ip, data_criacao, data_actualizacao)
+                       VALUES (?,?,?,?,?,?,?,?,?,?,?)')
+            ->execute([$idPass, $nome, $contacto, $cat, $idReserva, SP_CATEGORIAS[$cat][0], $estado,
+                       $autor === 'administrador' ? $idAutor : null, ip_cliente(), $agora, $agora]);
+        $id = (int)$pdo->lastInsertId();
+    }
+
     sp_add_mensagem($pdo, $id, $autor, $idAutor ?? $idPass, $texto);
     return $id;
 }
+
 
 function sp_add_mensagem(PDO $pdo, int $idPedido, string $autor, ?int $idUtilizador, string $texto): void {
     $agora = date('Y-m-d H:i:s');
