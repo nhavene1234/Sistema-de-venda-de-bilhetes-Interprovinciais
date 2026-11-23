@@ -23,13 +23,23 @@ function sino_notificacoes(string $classe, string $iconeHtml): string {
 /** Cria a coluna de controlo na primeira utilização (o ficheiro sql/09_notificacoes.sql faz o mesmo). */
 function notif_garantir_coluna(PDO $pdo): void {
     if (!empty($_SESSION['notif_coluna_ok'])) return;
-    $n = $pdo->query("SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE()
-                      AND TABLE_NAME = 'utilizador' AND COLUMN_NAME = 'notificacoes_vistas_em'")->fetchColumn();
-    if (!(int)$n) {
-        $pdo->exec('ALTER TABLE utilizador ADD COLUMN notificacoes_vistas_em DATETIME NULL');
+    $driver = $pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
+    if ($driver === 'pgsql') {
+        $n = $pdo->query("SELECT COUNT(*) FROM information_schema.columns WHERE table_schema = current_schema()
+                          AND table_name = 'utilizador' AND column_name = 'notificacoes_vistas_em'")->fetchColumn();
+        if (!(int)$n) {
+            $pdo->exec('ALTER TABLE utilizador ADD COLUMN notificacoes_vistas_em TIMESTAMP NULL');
+        }
+    } else {
+        $n = $pdo->query("SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE()
+                          AND TABLE_NAME = 'utilizador' AND COLUMN_NAME = 'notificacoes_vistas_em'")->fetchColumn();
+        if (!(int)$n) {
+            $pdo->exec('ALTER TABLE utilizador ADD COLUMN notificacoes_vistas_em DATETIME NULL');
+        }
     }
     $_SESSION['notif_coluna_ok'] = true;
 }
+
 
 /** "agora mesmo", "há 5 min", "há 3 h", "ontem às 14:30", "8 Out". */
 function notif_quando(string $ts): string {
