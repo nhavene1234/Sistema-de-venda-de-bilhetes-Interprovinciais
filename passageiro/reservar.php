@@ -59,13 +59,10 @@ try {
     $pdo->commit();   // tudo ou nada: se um lugar falhar, nenhum fica reservado
 } catch (PDOException $e) {
     if ($pdo->inTransaction()) $pdo->rollBack();
-    // 1062 (MySQL) ou 23505 (PostgreSQL) = lugar duplicado: outro passageiro reservou primeiro (RN02)
-    $duplicado = ($e->errorInfo[1] ?? 0) === 1062 || (string)$e->getCode() === '23505';
-    flash('erro', $duplicado
-        ? 'Um dos lugares acabou de ser reservado por outro passageiro. Escolha novamente.'
-        : 'Não foi possível reservar os lugares. Tente novamente.');
+    flash('erro', 'Erro SQL: ' . $e->getMessage());
     redirecionar($voltar);
 }
+
 foreach ($idsReservas as $idR) {
     registar_log($pdo, (int)$u['id_utilizador'], 'Lugar reservado (a aguardar pagamento)', 'reserva', $idR);
 }
