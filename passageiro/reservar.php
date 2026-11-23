@@ -39,29 +39,44 @@ $driver = $pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
 
 try {
     $pdo->beginTransaction();
-    // cancela bloqueios anteriores do mesmo passageiro (só pode ter um grupo de lugares à espera de pagamento)
-    $pdo->prepare("UPDATE reserva SET estado = 'cancelada', data_cancelamento = ? WHERE id_passageiro = ? AND estado = 'pendente'")
-        ->execute([date('Y-m-d H:i:s'), $u['id_utilizador']]);
+    // cancela bloqueios anteriores do mesmo passageiro
+    $stCanc = $pdo->prepare("UPDATE reserva SET estado = 'cancelada', data_cancelamento = ? WHERE id_passageiro = ? AND estado = 'pendente'");
+    $stCanc->execute([date('Y-m-d H:i:s'), $u['id_utilizador']]);
+    $stCanc->closeCursor();
 
     if ($driver === 'pgsql') {
         $ins = $pdo->prepare("INSERT INTO reserva (estado, data_expiracao, id_passageiro, id_viagem, id_assento) VALUES ('pendente', ?, ?, ?, ?) RETURNING id_reserva");
     } else {
         $ins = $pdo->prepare("INSERT INTO reserva (estado, data_expiracao, id_passageiro, id_viagem, id_assento) VALUES ('pendente', ?, ?, ?, ?)");
     }
-    $ref = $pdo->prepare('UPDATE reserva SET referencia = ? WHERE id_reserva = ?');
 
     foreach ($idsAssentos as $idA) {
         $ins->execute([$expira, $u['id_utilizador'], $idV, $idA]);
-        $idR = $driver === 'pgsql' ? (int)$ins->fetchColumn() : (int)$pdo->lastInsertId();
-        $ref->execute(['MT-' . date('Y') . '-' . str_pad((string)$idR, 6, '0', STR_PAD_LEFT), $idR]);
+        if ($driver === 'pgsql') {
+            $idR = (int)$ins->fetchColumn();
+            $ins->closeCursor();
+        } else {
+            $idR = (int)$pdo->lastInsertId();
+        }
         $idsReservas[] = $idR;
     }
-    $pdo->commit();   // tudo ou nada: se um lugar falhar, nenhum fica reservado
+
+    $ref = $pdo->prepare('UPDATE reserva SET referencia = ? WHERE id_reserva = ?');
+    foreach ($idsReservas as $idR) {
+        $ref->execute(['MT-' . date('Y') . '-' . str_pad((string)$idR, 6, '0', STR_PAD_LEFT), $idR]);
+        $ref->closeCursor();
+    }
+
+    $pdo->commit();
 } catch (PDOException $e) {
     if ($pdo->inTransaction()) $pdo->rollBack();
-    flash('erro', 'Erro SQL: ' . $e->getMessage());
+    $duplicado = ($e->errorInfo[1] ?? 0) === 1062 || (string)$e->getCode() === '23505';
+    flash('erro', $duplicado
+        ? 'Um dos lugares acabou de ser reservado por outro passageiro. Escolha novamente.'
+        : 'Não foi possível reservar os lugares. Tente novamente.');
     redirecionar($voltar);
 }
+
 
 foreach ($idsReservas as $idR) {
     registar_log($pdo, (int)$u['id_utilizador'], 'Lugar reservado (a aguardar pagamento)', 'reserva', $idR);
