@@ -1,0 +1,25 @@
+# Segredos e configuração local
+.env
+.env.*
+!.env.example
+
+# Backups e dumps da base de dados (contêm dados e hashes de palavras-passe)
+backups/*
+!backups/.htaccess
+/*.sql
+
+# Ficheiros enviados pelos utilizadores (livretes, cartas de condução, fotos)
+armazenamento/*
+!armazenamento/.htaccess
+
+# Arquivos compactados
+*.rar
+*.zip
+*.7z
+
+# Sistema e editores
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.log
