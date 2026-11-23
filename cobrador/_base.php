@@ -47,12 +47,13 @@ function cb_ctx(PDO $pdo, array $u): array {
         $pedida = isset($_GET['v']) ? (int)$_GET['v'] : (int)($_SESSION['cb_viagem'] ?? 0);
         foreach ($viagens as $x) { if ((int)$x['id_viagem'] === $pedida) { $viagem = $x; break; } }
         if (!$viagem && $viagens) $viagem = $viagens[0];
-        if ($viagem) {
+                if ($viagem) {
             $_SESSION['cb_viagem'] = (int)$viagem['id_viagem'];
-            $st = $pdo->prepare("SELECT COUNT(*), COALESCE(SUM(embarcado_em IS NOT NULL), 0) FROM reserva WHERE id_viagem = ? AND estado = 'confirmada'");
+            $st = $pdo->prepare("SELECT COUNT(*), COUNT(embarcado_em) FROM reserva WHERE id_viagem = ? AND estado = 'confirmada'");
             $st->execute([$viagem['id_viagem']]);
             [$tot, $emb] = array_map('intval', $st->fetch(PDO::FETCH_NUM));
         }
+
     }
     return ['id_transp' => $idT, 'empresa' => $empresa, 'viagem' => $viagem, 'viagens' => $viagens, 'proximas' => $proximas,
             'destaque' => $viagem ?? ($proximas[0] ?? null),   // viagem a mostrar (motorista/autocarro), mesmo que não seja hoje
