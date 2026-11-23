@@ -27,8 +27,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     redirecionar('gestor/autocarros.php');
 }
 
-$st = $pdo->prepare("SELECT a.*, (SELECT COUNT(*) FROM viagem v WHERE v.id_autocarro = a.id_autocarro AND v.estado = 'agendada' AND v.data >= CURDATE()) AS viagens
+$st = $pdo->prepare("SELECT a.*, (SELECT COUNT(*) FROM viagem v WHERE v.id_autocarro = a.id_autocarro AND v.estado = 'agendada' AND v.data >= CURRENT_DATE) AS viagens
                      FROM autocarro a WHERE a.id_transportadora = ? ORDER BY a.codigo_frota");
+
 $st->execute([$idT]);
 $lista = $st->fetchAll();
 

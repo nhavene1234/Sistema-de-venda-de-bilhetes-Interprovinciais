@@ -27,10 +27,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } elseif ($st->fetchColumn() > 0) {
             flash('erro', 'Já existe uma conta com este email. Se for um cobrador sem transportadora, use «Associar existente».');
         } else {
-            $tmp = gerar_senha_temporaria();
-            $pdo->prepare("INSERT INTO utilizador (nome, email, telefone, senha, perfil, id_transportadora) VALUES (?,?,?,?,'cobrador',?)")
-                ->execute([$nome, $email, $telN ? telefone_guardar($telN) : null, password_hash($tmp, PASSWORD_DEFAULT), $idT]);
-            registar_log($pdo, (int)$eu['id_utilizador'], 'Cobrador criado', 'utilizador', (int)$pdo->lastInsertId(), $nome . ' → ' . $transp['nome']);
+                        $tmp = gerar_senha_temporaria();
+            $driver = $pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
+            if ($driver === 'pgsql') {
+                $stIns = $pdo->prepare("INSERT INTO utilizador (nome, email, telefone, senha, perfil, id_transportadora) VALUES (?,?,?,?,'cobrador',?) RETURNING id_utilizador");
+                $stIns->execute([$nome, $email, $telN ? telefone_guardar($telN) : null, password_hash($tmp, PASSWORD_DEFAULT), $idT]);
+                $novoIdC = (int)$stIns->fetchColumn();
+            } else {
+                $pdo->prepare("INSERT INTO utilizador (nome, email, telefone, senha, perfil, id_transportadora) VALUES (?,?,?,?,'cobrador',?)")
+                    ->execute([$nome, $email, $telN ? telefone_guardar($telN) : null, password_hash($tmp, PASSWORD_DEFAULT), $idT]);
+                $novoIdC = (int)$pdo->lastInsertId();
+            }
+            registar_log($pdo, (int)$eu['id_utilizador'], 'Cobrador criado', 'utilizador', $novoIdC, $nome . ' → ' . $transp['nome']);
+
             flash('ok', "Cobrador $nome criado. Palavra-passe temporária: $tmp — comunique-a ao cobrador; ele pode alterá-la no seu perfil. Atribua-lhe agora as viagens.");
         }
 
@@ -115,7 +124,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $pdo->beginTransaction();
         try {
             // as viagens que ainda não aconteceram ficam sem cobrador; o histórico (viagens passadas) mantém-se
-            $st = $pdo->prepare('UPDATE viagem SET id_cobrador = NULL WHERE id_cobrador = ? AND data >= CURDATE() AND estado IN ' . VIAGEM_ESTADOS_ABERTOS);
+            $st = $pdo->prepare('UPDATE viagem SET id_cobrador = NULL WHERE id_cobrador = ? AND data >= CURRENT_DATE AND estado IN ' . VIAGEM_ESTADOS_ABERTOS);
             $st->execute([$c['id_utilizador']]);
             $libertadas = $st->rowCount();
             $pdo->prepare('UPDATE utilizador SET id_transportadora = NULL WHERE id_utilizador = ?')->execute([$c['id_utilizador']]);
@@ -134,7 +143,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 // ---------- listagem ----------
 $st = $pdo->prepare("SELECT u.id_utilizador, u.nome, u.email, u.telefone, u.foto, u.activo, u.bloqueado_ate,
-                            (SELECT COUNT(*) FROM viagem v WHERE v.id_cobrador = u.id_utilizador AND v.data >= CURDATE()
+                            (SELECT COUNT(*) FROM viagem v WHERE v.id_cobrador = u.id_utilizador AND v.data >= CURRENT_DATE
                                 AND v.estado IN " . VIAGEM_ESTADOS_ABERTOS . ") AS viagens
                      FROM utilizador u WHERE u.perfil = 'cobrador' AND u.id_transportadora = ? ORDER BY u.nome");
 $st->execute([$idT]);
@@ -147,7 +156,7 @@ if ($lista) {
     $in = implode(',', array_fill(0, count($ids), '?'));
     $st = $pdo->prepare("SELECT v.id_cobrador, v.data, v.hora_partida, ro.origem, ro.destino, m.nome AS motorista
                          FROM viagem v JOIN rota ro ON ro.id_rota = v.id_rota LEFT JOIN motorista m ON m.id_motorista = v.id_motorista
-                         WHERE v.id_cobrador IN ($in) AND v.data >= CURDATE() AND v.estado IN " . VIAGEM_ESTADOS_ABERTOS . "
+                         WHERE v.id_cobrador IN ($in) AND v.data >= CURRENT_DATE AND v.estado IN " . VIAGEM_ESTADOS_ABERTOS . "
                          ORDER BY v.data, v.hora_partida");
     $st->execute($ids);
     foreach ($st->fetchAll() as $r) {

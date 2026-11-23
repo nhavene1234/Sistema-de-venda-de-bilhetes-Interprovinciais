@@ -17,8 +17,8 @@ $st = $pdo->prepare("SELECT COUNT(*) $juncao");
 $st->execute([$idT, $ini90, $hoje]);
 $totalReservas = max(1, (int)$st->fetchColumn());
 
-// densidade por dia da semana e período do dia (momento em que a reserva foi feita)
-$st = $pdo->prepare("SELECT DAYOFWEEK(rs.data_reserva) AS d, HOUR(rs.data_reserva) AS h, COUNT(*) AS n $juncao GROUP BY d, h");
+// densidade por dia da semana (1=Dom .. 7=Sáb, igual ao DAYOFWEEK do MySQL) e hora do dia
+$st = $pdo->prepare("SELECT (EXTRACT(DOW FROM rs.data_reserva)::int + 1) AS d, EXTRACT(HOUR FROM rs.data_reserva)::int AS h, COUNT(*) AS n $juncao GROUP BY d, h");
 $st->execute([$idT, $ini90, $hoje]);
 $dias = ['Seg' => 2, 'Ter' => 3, 'Qua' => 4, 'Qui' => 5, 'Sex' => 6, 'Sáb' => 7, 'Dom' => 1];
 $linhasHora = ['05:00', '08:00', '12:00', '15:00', '18:00', '22:00'];
@@ -45,8 +45,10 @@ $cor = function (int $n) use ($maxCalor): string {
 
 // épocas de maior procura: reservas confirmadas por mês de viagem, no ano actual
 $ano = (int)date('Y');
-$st = $pdo->prepare("SELECT MONTH(v.data) AS m, COUNT(*) AS n FROM reserva rs JOIN viagem v ON v.id_viagem = rs.id_viagem
-                     JOIN rota ro ON ro.id_rota = v.id_rota WHERE ro.id_transportadora = ? AND rs.estado = 'confirmada' AND YEAR(v.data) = ? GROUP BY m");
+$st = $pdo->prepare("SELECT EXTRACT(MONTH FROM v.data)::int AS m, COUNT(*) AS n FROM reserva rs JOIN viagem v ON v.id_viagem = rs.id_viagem
+                     JOIN rota ro ON ro.id_rota = v.id_rota WHERE ro.id_transportadora = ? AND rs.estado = 'confirmada' AND EXTRACT(YEAR FROM v.data)::int = ? GROUP BY m");
+$st->execute([$idT, $ano]);
+
 $st->execute([$idT, $ano]);
 $meses = array_fill(1, 12, 0);
 foreach ($st->fetchAll() as $r) $meses[(int)$r['m']] = (int)$r['n'];

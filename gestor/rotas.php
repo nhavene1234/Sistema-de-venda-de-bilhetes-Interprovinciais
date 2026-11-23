@@ -122,7 +122,8 @@ $st = $pdo->prepare("SELECT id_autocarro, codigo_frota, matricula, capacidade_to
                      ORDER BY codigo_frota");
 $st->execute([$idT]);
 $autocarrosOpc = $st->fetchAll();
-$st = $pdo->prepare("SELECT id_motorista, codigo, nome FROM motorista WHERE id_transportadora = ? AND estado = 'disponivel' AND carta_validade >= CURDATE() ORDER BY codigo");
+$st = $pdo->prepare("SELECT id_motorista, codigo, nome FROM motorista WHERE id_transportadora = ? AND estado = 'disponivel' AND carta_validade >= CURRENT_DATE ORDER BY codigo");
+
 $st->execute([$idT]);
 $motoristasOpc = $st->fetchAll();
 
