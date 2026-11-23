@@ -35,25 +35,33 @@ if ((int)$st->fetchColumn() !== count($idsAssentos)) { flash('erro', 'Escolha lu
 $minutos = (int)config_valor($pdo, 'bloqueio_assento_minutos', 10);
 $expira = date('Y-m-d H:i:s', time() + $minutos * 60);
 $idsReservas = [];
+$driver = $pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
+
 try {
     $pdo->beginTransaction();
     // cancela bloqueios anteriores do mesmo passageiro (só pode ter um grupo de lugares à espera de pagamento)
     $pdo->prepare("UPDATE reserva SET estado = 'cancelada', data_cancelamento = ? WHERE id_passageiro = ? AND estado = 'pendente'")
         ->execute([date('Y-m-d H:i:s'), $u['id_utilizador']]);
 
-    $ins = $pdo->prepare("INSERT INTO reserva (estado, data_expiracao, id_passageiro, id_viagem, id_assento) VALUES ('pendente', ?, ?, ?, ?)");
+    if ($driver === 'pgsql') {
+        $ins = $pdo->prepare("INSERT INTO reserva (estado, data_expiracao, id_passageiro, id_viagem, id_assento) VALUES ('pendente', ?, ?, ?, ?) RETURNING id_reserva");
+    } else {
+        $ins = $pdo->prepare("INSERT INTO reserva (estado, data_expiracao, id_passageiro, id_viagem, id_assento) VALUES ('pendente', ?, ?, ?, ?)");
+    }
     $ref = $pdo->prepare('UPDATE reserva SET referencia = ? WHERE id_reserva = ?');
+
     foreach ($idsAssentos as $idA) {
         $ins->execute([$expira, $u['id_utilizador'], $idV, $idA]);
-        $idR = (int)$pdo->lastInsertId();
+        $idR = $driver === 'pgsql' ? (int)$ins->fetchColumn() : (int)$pdo->lastInsertId();
         $ref->execute(['MT-' . date('Y') . '-' . str_pad((string)$idR, 6, '0', STR_PAD_LEFT), $idR]);
         $idsReservas[] = $idR;
     }
     $pdo->commit();   // tudo ou nada: se um lugar falhar, nenhum fica reservado
 } catch (PDOException $e) {
     if ($pdo->inTransaction()) $pdo->rollBack();
-    // 1062 = lugar duplicado: outro passageiro reservou primeiro (RN02)
-    flash('erro', ($e->errorInfo[1] ?? 0) === 1062
+    // 1062 (MySQL) ou 23505 (PostgreSQL) = lugar duplicado: outro passageiro reservou primeiro (RN02)
+    $duplicado = ($e->errorInfo[1] ?? 0) === 1062 || (string)$e->getCode() === '23505';
+    flash('erro', $duplicado
         ? 'Um dos lugares acabou de ser reservado por outro passageiro. Escolha novamente.'
         : 'Não foi possível reservar os lugares. Tente novamente.');
     redirecionar($voltar);
