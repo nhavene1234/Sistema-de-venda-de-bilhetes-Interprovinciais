@@ -45,10 +45,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         if (!empty($erro)) { flash('erro', $erro); redirecionar('gestor/rotas.php'); }
 
-        $pdo->prepare('INSERT INTO rota (origem, destino, distancia_km, duracao_estimada, id_transportadora, preco_base) VALUES (?,?,?,?,?,?)')
-            ->execute([$origem, $destino, $km, sprintf('%02d:%02d:00', intdiv($min, 60), $min % 60), $idT, $preco]);
-        $idR = (int)$pdo->lastInsertId();
-        registar_log($pdo, (int)$eu['id_utilizador'], 'Rota criada', 'rota', $idR, "$origem → $destino");
+                $driver = $pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
+        if ($driver === 'pgsql') {
+            $stIns = $pdo->prepare('INSERT INTO rota (origem, destino, distancia_km, duracao_estimada, id_transportadora, preco_base) VALUES (?,?,?,?,?,?) RETURNING id_rota');
+            $stIns->execute([$origem, $destino, $km, sprintf('%02d:%02d:00', intdiv($min, 60), $min % 60), $idT, $preco]);
+            $idR = (int)$stIns->fetchColumn();
+        } else {
+            $pdo->prepare('INSERT INTO rota (origem, destino, distancia_km, duracao_estimada, id_transportadora, preco_base) VALUES (?,?,?,?,?,?)')
+                ->execute([$origem, $destino, $km, sprintf('%02d:%02d:00', intdiv($min, 60), $min % 60), $idT, $preco]);
+            $idR = (int)$pdo->lastInsertId();
+        }
+
 
         $msg = "Rota $origem → $destino criada.";
         if ($hora !== '') {
@@ -81,7 +88,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $pdo->prepare('UPDATE rota SET activa = ? WHERE id_rota = ?')->execute([$nova, $r['id_rota']]);
         registar_log($pdo, (int)$eu['id_utilizador'], $nova ? 'Rota activada' : 'Rota desactivada', 'rota', (int)$r['id_rota'], $r['origem'] . ' → ' . $r['destino']);
         flash('ok', 'Rota ' . $r['origem'] . ' → ' . $r['destino'] . ($nova ? ' activada.' : ' desactivada. As reservas já confirmadas mantêm-se válidas.'));
-
     } elseif ($acao === 'programar') {
         $r = rota_propria($pdo, (int)($_POST['id'] ?? 0), $idT, $transp);
         $hora = trim($_POST['hora'] ?? '');
@@ -105,10 +111,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     redirecionar('gestor/rotas.php');
 }
 
-$st = $pdo->prepare("SELECT ro.*, (SELECT COUNT(*) FROM viagem v WHERE v.id_rota = ro.id_rota AND v.estado = 'agendada' AND v.data >= CURDATE()) AS viagens
+$st = $pdo->prepare("SELECT ro.*, (SELECT COUNT(*) FROM viagem v WHERE v.id_rota = ro.id_rota AND v.estado = 'agendada' AND v.data >= CURRENT_DATE) AS viagens
                      FROM rota ro WHERE ro.id_transportadora = ? ORDER BY ro.origem, ro.destino");
 $st->execute([$idT]);
 $rotas = $st->fetchAll();
+
 
 $st = $pdo->prepare("SELECT id_autocarro, codigo_frota, matricula, capacidade_total, tipo_servico FROM autocarro
                      WHERE id_transportadora = ? AND estado = 'disponivel' AND EXISTS (SELECT 1 FROM assento s WHERE s.id_autocarro = autocarro.id_autocarro)

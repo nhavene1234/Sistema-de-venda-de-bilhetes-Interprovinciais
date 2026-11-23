@@ -29,7 +29,7 @@ function viagens_do_gestor(PDO $pdo, array $ids, int $idT): array {
     $in = implode(',', array_fill(0, count($ids), '?'));
     $st = $pdo->prepare("SELECT v.id_viagem, v.data, v.hora_partida, v.id_cobrador, ro.origem, ro.destino, ro.duracao_estimada
                          FROM viagem v JOIN rota ro ON ro.id_rota = v.id_rota
-                         WHERE v.id_viagem IN ($in) AND ro.id_transportadora = ? AND v.data >= CURDATE() AND v.estado IN " . VIAGEM_ESTADOS_ABERTOS . "
+                         WHERE v.id_viagem IN ($in) AND ro.id_transportadora = ? AND v.data >= CURRENT_DATE AND v.estado IN " . VIAGEM_ESTADOS_ABERTOS . "
                          ORDER BY v.data, v.hora_partida");
     $st->execute(array_merge($ids, [$idT]));
     return $st->fetchAll();
@@ -118,7 +118,7 @@ $st = $pdo->prepare('SELECT id_rota, origem, destino FROM rota WHERE id_transpor
 $st->execute([$idT]);
 $rotas = $st->fetchAll();
 
-$st = $pdo->prepare("SELECT COUNT(*) FROM viagem WHERE id_cobrador = ? AND data >= CURDATE() AND estado IN " . VIAGEM_ESTADOS_ABERTOS);
+$st = $pdo->prepare("SELECT COUNT(*) FROM viagem WHERE id_cobrador = ? AND data >= CURRENT_DATE AND estado IN " . VIAGEM_ESTADOS_ABERTOS);
 $st->execute([$idC]);
 $jaAtribuidas = (int)$st->fetchColumn();
 

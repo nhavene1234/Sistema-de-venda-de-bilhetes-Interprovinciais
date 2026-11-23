@@ -69,11 +69,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         redirecionar('gestor/motoristas.php');
     }
     if (!$erro) {
-        $pdo->prepare('INSERT INTO motorista (id_transportadora, codigo, nome, documento, data_nascimento, telefone, email, morada, carta_numero,
-                       carta_categoria, carta_emissao, carta_validade, carta_ficheiro, estado) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)')
-            ->execute([$idT, $v['codigo'], $v['nome'], $v['documento'], $v['nascimento'], telefone_formatado($nove), $v['email'] ?: null, $v['morada'] ?: null,
-                       $v['carta_numero'], $v['categoria'], $v['emissao'], $v['validade'], $ficheiro, $v['estado']]);
-        registar_log($pdo, (int)$eu['id_utilizador'], 'Motorista adicionado', 'motorista', (int)$pdo->lastInsertId(), $v['codigo'] . ' · ' . $v['nome']);
+               $driver = $pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
+        if ($driver === 'pgsql') {
+            $stIns = $pdo->prepare('INSERT INTO motorista (id_transportadora, codigo, nome, documento, data_nascimento, telefone, email, morada, carta_numero,
+                                    carta_categoria, carta_emissao, carta_validade, carta_ficheiro, estado) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?) RETURNING id_motorista');
+            $stIns->execute([$idT, $v['codigo'], $v['nome'], $v['documento'], $v['nascimento'], telefone_formatado($nove), $v['email'] ?: null, $v['morada'] ?: null,
+                             $v['carta_numero'], $v['categoria'], $v['emissao'], $v['validade'], $ficheiro, $v['estado']]);
+            $novoIdM = (int)$stIns->fetchColumn();
+        } else {
+            $pdo->prepare('INSERT INTO motorista (id_transportadora, codigo, nome, documento, data_nascimento, telefone, email, morada, carta_numero,
+                           carta_categoria, carta_emissao, carta_validade, carta_ficheiro, estado) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)')
+                ->execute([$idT, $v['codigo'], $v['nome'], $v['documento'], $v['nascimento'], telefone_formatado($nove), $v['email'] ?: null, $v['morada'] ?: null,
+                           $v['carta_numero'], $v['categoria'], $v['emissao'], $v['validade'], $ficheiro, $v['estado']]);
+            $novoIdM = (int)$pdo->lastInsertId();
+        }
+        registar_log($pdo, (int)$eu['id_utilizador'], 'Motorista adicionado', 'motorista', $novoIdM, $v['codigo'] . ' · ' . $v['nome']);
+
         flash('ok', 'Motorista ' . $v['nome'] . ' adicionado. Já pode ser atribuído a viagens.');
         redirecionar('gestor/motoristas.php');
     }

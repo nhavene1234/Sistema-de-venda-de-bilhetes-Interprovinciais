@@ -46,12 +46,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     if (!$erro) {
         try {
-            $pdo->beginTransaction();
-            $pdo->prepare('INSERT INTO autocarro (matricula, modelo, capacidade_total, id_transportadora, codigo_frota, marca, ano_fabrico, tipo_servico,
-                           configuracao_assentos, ar_condicionado, wifi, usb, validade_inspecao, livrete, estado, activo)
-                           VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)')
-                ->execute([$v['matricula'], $v['modelo'], $v['assentos'], $idT, $v['codigo_frota'], $v['marca'], $v['ano_fabrico'], $v['tipo_servico'],
-                           $v['configuracao'], $v['ar'], $v['wifi'], $v['usb'], $v['inspecao'], $livrete, $v['estado'], $v['estado'] === 'disponivel' ? 1 : 0]);
+                        $driver = $pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
+            if ($driver === 'pgsql') {
+                $stIns = $pdo->prepare('INSERT INTO autocarro (matricula, modelo, capacidade_total, id_transportadora, codigo_frota, marca, ano_fabrico, tipo_servico,
+                                        configuracao_assentos, ar_condicionado, wifi, usb, validade_inspecao, livrete, estado, activo)
+                                        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) RETURNING id_autocarro');
+                $stIns->execute([$v['matricula'], $v['modelo'], $v['assentos'], $idT, $v['codigo_frota'], $v['marca'], $v['ano_fabrico'], $v['tipo_servico'],
+                                 $v['configuracao'], $v['ar'], $v['wifi'], $v['usb'], $v['inspecao'], $livrete, $v['estado'], $v['estado'] === 'disponivel' ? 1 : 0]);
+                $idA = (int)$stIns->fetchColumn();
+            } else {
+                $pdo->prepare('INSERT INTO autocarro (matricula, modelo, capacidade_total, id_transportadora, codigo_frota, marca, ano_fabrico, tipo_servico,
+                               configuracao_assentos, ar_condicionado, wifi, usb, validade_inspecao, livrete, estado, activo)
+                               VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)')
+                    ->execute([$v['matricula'], $v['modelo'], $v['assentos'], $idT, $v['codigo_frota'], $v['marca'], $v['ano_fabrico'], $v['tipo_servico'],
+                               $v['configuracao'], $v['ar'], $v['wifi'], $v['usb'], $v['inspecao'], $livrete, $v['estado'], $v['estado'] === 'disponivel' ? 1 : 0]);
+                $idA = (int)$pdo->lastInsertId();
+            }
+
             $idA = (int)$pdo->lastInsertId();
             // assentos no formato fila+letra (1A, 1B, 1C, 1D, 2A...): 2+2 usa A-D, 2+1 usa A-C
             $insA = $pdo->prepare("INSERT INTO assento (numero, tipo, id_autocarro) VALUES (?, 'normal', ?)");
